@@ -1,4 +1,8 @@
 using ChatServiceMVC.Hubs;
+using ChatServiceMVC.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using ChatServiceMVC.Models;
 namespace ChatServiceMVC
 {
     public class Program
@@ -6,6 +10,12 @@ namespace ChatServiceMVC
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var connectionString = builder.Configuration.GetConnectionString("ChatServiceMVCContextConnection") ?? throw new InvalidOperationException("Connection string 'ChatServiceMVCContextConnection' not found.");
+
+            builder.Services.AddDbContext<ChatServiceMVCContext>(options => options.UseSqlServer(connectionString));
+            builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ChatServiceMVCContext>();
+
+            //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ChatServiceMVCContext>();
 
             // Add services to the container.
             builder.Services.AddRazorPages();
